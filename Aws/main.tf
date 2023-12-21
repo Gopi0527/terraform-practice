@@ -1,35 +1,17 @@
 
 resource "aws_vpc" "first" {
-  cidr_block = "10.10.0.0/16"
+  cidr_block = var.vpc_cidr
   tags = {
     name = "my_vpc"
   }
 
 }
-resource "aws_subnet" "web" {
+resource "aws_subnet" "subnets" {
   vpc_id     = aws_vpc.first.id
-  cidr_block = "10.10.0.0/24"
+  count = length(var.subnet_names)
+  cidr_block = cidrsubnet(var.vpc_cidr,8,count.index)
   tags = {
-    Name = "web"
+    Name = var.subnet_names[count.index]
   }
   depends_on = [aws_vpc.first]
-
-}
-resource "aws_subnet" "business" {
-  vpc_id     = aws_vpc.first.id
-  cidr_block = "10.10.1.0/24"
-  tags = {
-    Name = "business"
-  }
-  depends_on = [aws_vpc.first]
-
-}
-resource "aws_subnet" "data" {
-  vpc_id     = aws_vpc.first.id
-  cidr_block = "10.10.2.0/24"
-  tags = {
-    Name = "data"
-  }
-  depends_on = [aws_vpc.first]
-
 }
